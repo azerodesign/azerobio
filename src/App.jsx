@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BlobBackground from './components/BlobBackground';
 import LinkCard from './components/LinkCard';
 import DrawerAbout from './components/DrawerAbout';
+import { supabase } from './lib/supabase';
 
 // Inline SVG Icons
 const TikTokIcon = () => (
@@ -22,7 +23,7 @@ const HamburgerIcon = () => (
   </svg>
 );
 
-const SocialIcons = () => (
+const SocialIcons = ({ profile }) => (
   <div className="flex gap-3 justify-center">
     <a
       href="https://tiktok.com/"
@@ -34,7 +35,7 @@ const SocialIcons = () => (
       <TikTokIcon />
     </a>
     <a
-      href="https://wa.me/"
+      href={profile?.username ? `https://wa.me/` : `https://wa.me/`}
       target="_blank"
       rel="noopener noreferrer"
       className="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center text-white hover:bg-white/25 transition-all duration-200"
@@ -47,39 +48,28 @@ const SocialIcons = () => (
 
 export default function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [links, setLinks] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const links = [
-    {
-      label: "Order / Konsultasi",
-      href: "https://wa.me/",
-      icon: "chat",
-      disabled: false
-    },
-    {
-      label: "Portofolio",
-      href: "#",
-      icon: "briefcase",
-      disabled: false
-    },
-    {
-      label: "TikTok",
-      href: "https://tiktok.com/@azerodesign",
-      icon: "tiktok",
-      disabled: false
-    },
-    {
-      label: "Instagram",
-      href: "https://instagram.com/azerodesign",
-      icon: "instagram",
-      disabled: false
-    },
-    {
-      label: "Motion Academy",
-      href: "#",
-      icon: "play",
-      disabled: false
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [linksRes, profileRes] = await Promise.all([
+          supabase.from('links').select('*').eq('enabled', true).order('sort_order', { ascending: true }),
+          supabase.from('profiles').select('*').eq('id', '00000000-0000-0000-0000-000000000001').single()
+        ]);
+        
+        if (linksRes.data) setLinks(linksRes.data);
+        if (profileRes.data) setProfile(profileRes.data);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+    loadData();
+  }, []);
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#0F2B6B] via-[#1565C0] to-[#42A5F5] flex items-center justify-center font-sans text-white relative overflow-hidden">
@@ -107,37 +97,57 @@ export default function App() {
             {/* Gradient Ring Wrapper */}
             <div className="p-[3px] rounded-full bg-gradient-to-br from-[#60A5FA] via-[#A78BFA] to-[#F472B6] shadow-lg">
               <div className="p-[2px] rounded-full bg-[#1565C0]">
-                <img
-                  src="/avatar.png"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full object-cover relative z-10"
-                  onError={(e) => {
-                    e.target.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&q=80";
-                  }}
-                />
+                {loading ? (
+                  <div className="w-20 h-20 rounded-full bg-white/10 animate-pulse" />
+                ) : (
+                  <img
+                    src={profile?.avatar_url || "/avatar.png"}
+                    alt="Avatar"
+                    className="w-20 h-20 rounded-full object-cover relative z-10"
+                    onError={(e) => {
+                      e.target.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&q=80";
+                    }}
+                  />
+                )}
               </div>
             </div>
           </div>
-          <h1 className="text-xl font-semibold tracking-tight">@azerodesign</h1>
-          <p className="text-sm opacity-80 mt-1">Motion Designer & Graphics Designer</p>
+          {loading ? (
+            <div className="h-6 w-32 bg-white/10 rounded-md animate-pulse mb-2" />
+          ) : (
+            <h1 className="text-xl font-semibold tracking-tight">{profile?.username || "@azerodesign"}</h1>
+          )}
+          {loading ? (
+            <div className="h-4 w-48 bg-white/10 rounded-md animate-pulse mt-1" />
+          ) : (
+            <p className="text-sm opacity-80 mt-1">{profile?.tagline || "Motion Designer & Graphics Designer"}</p>
+          )}
         </div>
 
         {/* Social Icons with custom gap */}
         <div className="mt-0">
-          <SocialIcons />
+          <SocialIcons profile={profile} />
         </div>
 
         {/* Links Cards */}
         <div className="w-full flex flex-col gap-3 mt-[24px]">
-          {links.map((link, idx) => (
-            <LinkCard
-              key={idx}
-              icon={link.icon}
-              label={link.label}
-              href={link.href}
-              disabled={link.disabled}
-            />
-          ))}
+          {loading ? (
+            <>
+              <div className="w-full h-14 bg-white/10 rounded-2xl animate-pulse" />
+              <div className="w-full h-14 bg-white/10 rounded-2xl animate-pulse" />
+              <div className="w-full h-14 bg-white/10 rounded-2xl animate-pulse" />
+            </>
+          ) : (
+            links.map((link) => (
+              <LinkCard
+                key={link.id}
+                icon={link.icon}
+                label={link.label}
+                href={link.href}
+                disabled={!link.enabled}
+              />
+            ))
+          )}
         </div>
 
         {/* Footer */}
