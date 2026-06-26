@@ -16,18 +16,6 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
-const ChatIcon = () => (
-  <svg className="w-5 h-5 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-  </svg>
-);
-
-const BriefcaseIcon = () => (
-  <svg className="w-5 h-5 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-  </svg>
-);
-
 const HamburgerIcon = () => (
   <svg className="w-5 h-5 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2.5">
     <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -61,8 +49,36 @@ export default function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const links = [
-    { label: "Order / Konsultasi", href: "https://wa.me/", disabled: false, icon: ChatIcon },
-    { label: "Portofolio | Coming Soon", href: "#", disabled: true, icon: BriefcaseIcon }
+    {
+      label: "Order / Konsultasi",
+      href: "https://wa.me/",
+      icon: "chat",
+      disabled: false
+    },
+    {
+      label: "Portofolio",
+      href: "#",
+      icon: "briefcase",
+      disabled: false
+    },
+    {
+      label: "TikTok",
+      href: "https://tiktok.com/@azerodesign",
+      icon: "tiktok",
+      disabled: false
+    },
+    {
+      label: "Instagram",
+      href: "https://instagram.com/azerodesign",
+      icon: "instagram",
+      disabled: false
+    },
+    {
+      label: "Motion Academy",
+      href: "#",
+      icon: "play",
+      disabled: false
+    }
   ];
 
   return (
