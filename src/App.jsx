@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import BlobBackground from './components/BlobBackground';
+import LinkCard from './components/LinkCard';
+import DrawerAbout from './components/DrawerAbout';
 
 // Inline SVG Icons
 const TikTokIcon = () => (
@@ -13,12 +16,6 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
-const ArrowRightIcon = () => (
-  <svg className="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-  </svg>
-);
-
 const ChatIcon = () => (
   <svg className="w-5 h-5 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2">
     <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -28,6 +25,12 @@ const ChatIcon = () => (
 const BriefcaseIcon = () => (
   <svg className="w-5 h-5 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2">
     <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+);
+
+const HamburgerIcon = () => (
+  <svg className="w-5 h-5 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2.5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
   </svg>
 );
 
@@ -54,40 +57,9 @@ const SocialIcons = () => (
   </div>
 );
 
-const LinkCard = ({ icon: Icon, label, href, disabled }) => {
-  if (disabled) {
-    return (
-      <div className="w-full flex items-center gap-3 px-4 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl opacity-50 cursor-not-allowed pointer-events-none text-white">
-        <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-          <Icon />
-        </div>
-        <span className="flex-1 text-center text-sm font-medium pr-10">{label}</span>
-        <div className="opacity-50 shrink-0">
-          <ArrowRightIcon />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="w-full flex items-center gap-3 px-4 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-white hover:border-white/50 hover:-translate-y-0.5 transition-all duration-200 group"
-    >
-      <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-        <Icon />
-      </div>
-      <span className="flex-1 text-center text-sm font-medium pr-10">{label}</span>
-      <div className="opacity-50 group-hover:opacity-80 group-hover:translate-x-0.5 transition-all duration-200 shrink-0">
-        <ArrowRightIcon />
-      </div>
-    </a>
-  );
-};
-
 export default function App() {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   const links = [
     { label: "Order / Konsultasi", href: "https://wa.me/", disabled: false, icon: ChatIcon },
     { label: "Portofolio | Coming Soon", href: "#", disabled: true, icon: BriefcaseIcon }
@@ -95,36 +67,52 @@ export default function App() {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#0F2B6B] via-[#1565C0] to-[#42A5F5] flex items-center justify-center font-sans text-white relative overflow-hidden">
-      {/* Background Radial Glow */}
-      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-48 h-48 bg-white/10 blur-3xl rounded-full pointer-events-none" />
+      {/* Animated Floating Blobs Background with Noise */}
+      <BlobBackground />
+
+      {/* Hamburger Trigger */}
+      <button
+        onClick={() => setIsDrawerOpen(true)}
+        className="fixed top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/25 transition-colors duration-200 text-white"
+        aria-label="Open menu"
+      >
+        <HamburgerIcon />
+      </button>
+
+      {/* About Drawer */}
+      <DrawerAbout isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
 
       {/* Inner Container */}
-      <div className="max-w-sm w-full mx-auto px-4 py-10 flex flex-col items-center gap-5 z-10">
+      <div className="max-w-sm w-full mx-auto px-4 py-10 flex flex-col items-center gap-5 z-10 relative">
         
         {/* Avatar Section */}
         <div className="flex flex-col items-center text-center">
-          <div className="relative mb-3">
-            {/* Direct glow behind image */}
-            <div className="absolute inset-0 bg-white/10 blur-xl rounded-full" />
-            <img
-              src="/avatar.png"
-              alt="Avatar"
-              className="w-20 h-20 rounded-full border-2 border-white object-cover relative z-10 shadow-lg"
-              onError={(e) => {
-                // Failback representation if /avatar.png doesn't exist yet
-                e.target.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&q=80";
-              }}
-            />
+          <div className="relative mb-[20px]">
+            {/* Gradient Ring Wrapper */}
+            <div className="p-[3px] rounded-full bg-gradient-to-br from-[#60A5FA] via-[#A78BFA] to-[#F472B6] shadow-lg">
+              <div className="p-[2px] rounded-full bg-[#1565C0]">
+                <img
+                  src="/avatar.png"
+                  alt="Avatar"
+                  className="w-20 h-20 rounded-full object-cover relative z-10"
+                  onError={(e) => {
+                    e.target.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&q=80";
+                  }}
+                />
+              </div>
+            </div>
           </div>
           <h1 className="text-xl font-semibold tracking-tight">@azerodesign</h1>
           <p className="text-sm opacity-80 mt-1">Motion Designer & Graphics Designer</p>
         </div>
 
-        {/* Social Icons */}
-        <SocialIcons />
+        {/* Social Icons with custom gap */}
+        <div className="mt-0">
+          <SocialIcons />
+        </div>
 
         {/* Links Cards */}
-        <div className="w-full flex flex-col gap-3 mt-2">
+        <div className="w-full flex flex-col gap-3 mt-[24px]">
           {links.map((link, idx) => (
             <LinkCard
               key={idx}
@@ -137,8 +125,10 @@ export default function App() {
         </div>
 
         {/* Footer */}
-        <footer className="text-xs opacity-40 text-center mt-6 w-full">
-          azerodesign &copy; 2025
+        <footer className="text-xs opacity-40 text-center mt-6 w-full flex items-center justify-center gap-1.5">
+          <span>azerodesign &copy; 2025</span>
+          <span>·</span>
+          <span>made with React</span>
         </footer>
       </div>
     </div>

@@ -1,3 +1,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  @keyframes float1 {
+    0%, 100% { transform: translate(0px, 0px) scale(1); }
+    50% { transform: translate(25px, -30px) scale(1.1); }
+  }
+  @keyframes float2 {
+    0%, 100% { transform: translate(0px, 0px) scale(1.1); }
+    50% { transform: translate(-30px, 20px) scale(1); }
+  }
+  @keyframes float3 {
+    0%, 100% { transform: translate(0px, 0px) scale(1); }
+    50% { transform: translate(20px, 35px) scale(1.08); }
+  }
+  @keyframes float4 {
+    0%, 100% { transform: translate(0px, 0px) scale(1.05); }
+    50% { transform: translate(-25px, -20px) scale(1); }
+  }
+  @keyframes shimmer-move {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(300%); }
+  }
+
+  .animate-blob-float-1 {
+    animation: float1 8s ease-in-out infinite;
+  }
+  .animate-blob-float-2 {
+    animation: float2 11s ease-in-out infinite;
+  }
+  .animate-blob-float-3 {
+    animation: float3 14s ease-in-out infinite;
+  }
+  .animate-blob-float-4 {
+    animation: float4 9s ease-in-out infinite;
+  }
+  .animate-shimmer {
+    animation: shimmer-move 2.5s ease-in-out infinite;
+  }
+}
